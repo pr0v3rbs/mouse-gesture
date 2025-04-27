@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es2020",         // Edge Chromium 호환
+    "module": "none",           // 번들 없이 그대로 삽입
+    "rootDir": "src",           // TS 소스 위치
+    "outDir": "dist",           // 같은 폴더에 JS 출력
+    "strict": true,             // 선택. 엄격 모드
+    "skipLibCheck": true        // 빠른 빌드용
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}

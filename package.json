@@ -1,0 +1,25 @@
+{
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rm -rf dist"
+  },
+  "name": "mouse-gesture",
+  "version": "1.0.0",
+  "description": "Edge Mouse Gesture Extension",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pr0v3rbs/mouse-gesture.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pr0v3rbs/mouse-gesture/issues"
+  },
+  "homepage": "https://github.com/pr0v3rbs/mouse-gesture#readme",
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
