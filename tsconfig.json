@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es2020",         // Edge Chromium 호환
-    "module": "none",           // 번들 없이 그대로 삽입
-    "rootDir": "src",           // TS 소스 위치
-    "outDir": "dist",           // 같은 폴더에 JS 출력
-    "strict": true,             // 선택. 엄격 모드
-    "skipLibCheck": true        // 빠른 빌드용
+    "target": "es2020",         // Compatibility with ES2020 for Edge extension
+    "module": "none",           // No bundling needed
+    "rootDir": "src",           // Root directory for TypeScript files
+    "outDir": "dist",           // Output directory for compiled JS
+    "strict": true,             // Enable all strict type-checking options
+    "skipLibCheck": true        // Skip type checking of declaration files
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
