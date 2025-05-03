@@ -1,5 +1,5 @@
 ########################################
-# 1) 기본 Node / npm
+# 1) Default Node / npm
 ########################################
 node_modules/
 package-lock.json
@@ -9,9 +9,8 @@ yarn-error.log*
 .pnpm-debug.log*
 
 ########################################
-# 2) TypeScript 빌드 산출물
+# 2) TypeScript Build Output
 ########################################
-# (tsconfig.json 의 "outDir": "dist" 기준)
 dist/
 build/
 out/
