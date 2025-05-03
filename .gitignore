@@ -1,0 +1,20 @@
+########################################
+# 1) 기본 Node / npm
+########################################
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+########################################
+# 2) TypeScript 빌드 산출물
+########################################
+# (tsconfig.json 의 "outDir": "dist" 기준)
+dist/
+build/
+out/
+*.js
+*.js.map
+*.d.ts

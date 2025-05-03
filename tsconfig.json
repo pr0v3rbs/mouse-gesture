@@ -2,10 +2,12 @@
   "compilerOptions": {
     "target": "es2020",         // Compatibility with ES2020 for Edge extension
     "module": "none",           // No bundling needed
+    "lib": ["dom", "es2020"],
     "rootDir": "src",           // Root directory for TypeScript files
     "outDir": "dist",           // Output directory for compiled JS
     "strict": true,             // Enable all strict type-checking options
-    "skipLibCheck": true        // Skip type checking of declaration files
+    "skipLibCheck": true,       // Skip type checking of declaration files
+    "types": ["chrome"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

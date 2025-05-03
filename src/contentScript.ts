@@ -1,13 +1,14 @@
-const THRESHOLD = 8; // 방향 판단 최소 이동량 (px)
+const THRESHOLD = 8; // Threshold for gesture recognition
+type Dir = 'L' | 'R' | 'U' | 'D';
 
-function getDirection(dx: number, dy: number): 'L' | 'R' | 'U' | 'D' | null {
+function getDirection(dx: number, dy: number): Dir | null {
   if (Math.abs(dx) < THRESHOLD && Math.abs(dy) < THRESHOLD) return null;
   return Math.abs(dx) > Math.abs(dy)
     ? (dx > 0 ? 'R' : 'L')
     : (dy > 0 ? 'D' : 'U');
 }
 
-// 중앙 텍스트 표시용 함수
+// Show the gesture pattern on the screen
 function showGesture(pattern: string) {
   const div = document.createElement('div');
   div.textContent = pattern;
@@ -27,7 +28,7 @@ function showGesture(pattern: string) {
   });
   document.body.appendChild(div);
 
-  // 1초 후에 자연스럽게 사라지게
+  // Deappear the gesture pattern after 1 second
   setTimeout(() => {
     div.style.transition = 'opacity 0.5s';
     div.style.opacity = '0';
@@ -36,15 +37,21 @@ function showGesture(pattern: string) {
 }
 
 document.addEventListener('mousedown', (e) => {
-  if (e.button !== 2) return; // 우클릭만 처리
+  if (e.button !== 2) return; // Protect right-click
   e.preventDefault();
 
-  let startX = e.clientX, startY = e.clientY;
-  let lastX = startX, lastY = startY;
-  let directions: ('L' | 'R' | 'U' | 'D')[] = [];
-
+  let moved = false;
+  const dirs: Dir[] = [];
+  let [sx, sy] = [e.clientX, e.clientY];
+  let [lx, ly] = [sx, sy];
   let canvas: HTMLCanvasElement | null = null;
   let ctx: CanvasRenderingContext2D | null = null;
+
+  const ctxMenuBlock = (cmEvt: MouseEvent) => {
+    if (moved) cmEvt.preventDefault();
+  };
+
+  document.addEventListener('contextmenu', ctxMenuBlock, { capture: true, once: true });
 
   const moveHandler = (moveEvent: MouseEvent) => {
     if (!canvas) {
@@ -62,27 +69,19 @@ document.addEventListener('mousedown', (e) => {
       canvas.height = window.innerHeight;
       ctx = canvas.getContext('2d');
       ctx?.beginPath();
-      ctx?.moveTo(startX, startY);
+      ctx?.moveTo(sx, sy);
       ctx && (ctx.strokeStyle = 'red');
       ctx && (ctx.lineWidth = 2);
       document.body.appendChild(canvas);
+      moved = true;
     }
 
-    const dx = moveEvent.clientX - lastX;
-    const dy = moveEvent.clientY - lastY;
-    const dir = getDirection(dx, dy);
-
-    if (dir && dir !== directions[directions.length - 1]) {
-      if (directions.length < 3) {
-        directions.push(dir);
-      }
-    }
+    const dir = getDirection(moveEvent.clientX - lx, moveEvent.clientY - ly);
+    if (dir && dir !== dirs[dirs.length - 1] && dirs.length < 3) dirs.push(dir);
 
     ctx?.lineTo(moveEvent.clientX, moveEvent.clientY);
     ctx?.stroke();
-
-    lastX = moveEvent.clientX;
-    lastY = moveEvent.clientY;
+    [lx, ly] = [moveEvent.clientX, moveEvent.clientY];
   };
 
   const upHandler = (upEvent: MouseEvent) => {
@@ -92,14 +91,11 @@ document.addEventListener('mousedown', (e) => {
     document.removeEventListener('mouseup', upHandler);
     canvas?.remove();
 
-    if (directions.length > 0) {
-      const pattern = directions.join('');
-      console.log('인식한 제스처:', pattern);
-      showGesture(pattern);  // << 여기 추가된 부분
-    }
-
-    if (directions.length > 0) {
-      upEvent.preventDefault(); // 우클릭 메뉴 방지
+    if (dirs.length) {
+      const pattern = dirs.join('');
+      showGesture(pattern);
+      chrome.runtime.sendMessage({ type: 'gesture', pattern });
+      upEvent.preventDefault();
     }
   };
 
