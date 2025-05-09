@@ -1,4 +1,6 @@
-const THRESHOLD = 8; // Threshold for gesture recognition
+const THRESHOLD = 8;  // Threshold for gesture recognition
+const MIN_DRAG = 12;  // Minimum Gesture start value
+const MIN_DRAG_SQ = MIN_DRAG * MIN_DRAG;
 type Dir = 'L' | 'R' | 'U' | 'D';
 
 function getDirection(dx: number, dy: number): Dir | null {
@@ -54,26 +56,34 @@ document.addEventListener('mousedown', (e) => {
   document.addEventListener('contextmenu', ctxMenuBlock, { capture: true, once: true });
 
   const moveHandler = (moveEvent: MouseEvent) => {
-    if (!canvas) {
-      canvas = document.createElement('canvas');
-      Object.assign(canvas.style, {
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        width: '100%',
-        height: '100%',
-        zIndex: '9999',
-        pointerEvents: 'none'
-      });
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      ctx = canvas.getContext('2d');
-      ctx?.beginPath();
-      ctx?.moveTo(sx, sy);
-      ctx && (ctx.strokeStyle = 'red');
-      ctx && (ctx.lineWidth = 2);
-      document.body.appendChild(canvas);
-      moved = true;
+    if (!moved) {
+      const dx0 = moveEvent.clientX - sx;
+      const dy0 = moveEvent.clientY - sy;
+      if (dx0 * dx0 + dy0 * dy0 >= MIN_DRAG_SQ) {
+        moved = true;
+        if (!canvas) {
+          canvas = document.createElement('canvas');
+          Object.assign(canvas.style, {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            zIndex: '9999',
+            pointerEvents: 'none'
+          });
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          ctx = canvas.getContext('2d');
+          ctx?.beginPath();
+          ctx?.moveTo(sx, sy);
+          ctx && (ctx.strokeStyle = 'red');
+          ctx && (ctx.lineWidth = 2);
+          document.body.appendChild(canvas);
+        }
+      } else {
+        return;
+      }
     }
 
     const dir = getDirection(moveEvent.clientX - lx, moveEvent.clientY - ly);
@@ -89,9 +99,9 @@ document.addEventListener('mousedown', (e) => {
 
     document.removeEventListener('mousemove', moveHandler);
     document.removeEventListener('mouseup', upHandler);
-    canvas?.remove();
+    if (moved) canvas?.remove();
 
-    if (dirs.length) {
+    if (moved && dirs.length) {
       const pattern = dirs.join('');
       showGesture(pattern);
       chrome.runtime.sendMessage({ type: 'gesture', pattern });
